@@ -1,0 +1,13 @@
+2025-08-11 23:50:02,976 - INFO - 初始化llm大模型：[1mTongyi[0m
+Params: {'model_name': 'qwen-max'}
+2025-08-11 23:50:02,977 - INFO - 初始化embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='your_api_key' max_retries=5
+2025-08-11 23:50:05,027 - INFO - Chroma数据库连接成功，连接方式：http, host:localhost, port:8000, embed:client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='your_api_key' max_retries=5
+2025-08-11 23:50:05,028 - INFO - Chroma数据库的Collectname：langchain
+2025-08-11 23:50:05,033 - INFO - Chroma数据库所使用的embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='your_api_key' max_retries=5
+2025-08-11 23:50:05,038 - INFO - 检索器所使用的Chat模型：[1mTongyi[0m
+Params: {'model_name': 'qwen-max'}
+2025-08-11 23:50:05,038 - INFO - 使用的检索器类: SimpleRetrieverWrapper
+2025-08-11 23:50:05,039 - INFO - 初始化自定义的Retriever
+2025-08-11 23:50:05,040 - INFO - 已启用 ContextualCompressionRetriever
+2025-08-11 23:50:05,041 - INFO - 已启用 ElasticsearchRetriever
+2025-08-11 23:50:05,041 - INFO - FinanceBotEx连接数据库: sqlite:///E:\ai\jrai\smart-finance-bot\dataset\dataset\博金杯比赛数据.db

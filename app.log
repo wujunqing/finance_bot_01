@@ -1,0 +1,328 @@
+2025-08-11 11:47:59,752 - INFO - 加载停用词：841 个
+2025-08-11 11:49:20,782 - INFO - 加载停用词：841 个
+2025-08-11 11:49:33,758 - INFO - 加载停用词：841 个
+2025-08-11 11:51:07,445 - INFO - 加载停用词：841 个
+2025-08-11 11:52:46,243 - INFO - 加载停用词：841 个
+2025-08-11 11:59:28,363 - INFO - 加载停用词：841 个
+2025-08-11 11:59:32,564 - INFO - Output root directory: test_result
+2025-08-11 11:59:32,565 - INFO - Test plan directory: test_result\TestPlan
+2025-08-11 11:59:32,567 - INFO - Test result directory: test_result\TestPlan\2025_08_11_11_59_32
+2025-08-11 12:03:09,622 - INFO - 加载停用词：841 个
+2025-08-11 12:03:12,443 - INFO - Output root directory: test_result
+2025-08-11 12:03:12,444 - INFO - Test plan directory: test_result\TestPlan
+2025-08-11 12:03:12,446 - INFO - Test result directory: test_result\TestPlan\2025_08_11_12_03_12
+2025-08-11 12:08:38,064 - INFO - 加载停用词：841 个
+2025-08-11 12:09:19,589 - INFO - 加载停用词：841 个
+2025-08-11 12:13:39,266 - INFO - 加载停用词：841 个
+2025-08-11 12:14:10,974 - INFO - 加载停用词：841 个
+2025-08-11 12:21:42,765 - INFO - 加载停用词：841 个
+2025-08-11 12:26:35,464 - INFO - 加载停用词：841 个
+2025-08-11 12:32:15,627 - INFO - 加载停用词：841 个
+2025-08-11 12:33:34,301 - INFO - 加载停用词：841 个
+2025-08-11 12:33:36,167 - INFO - Output root directory: test_result
+2025-08-11 12:33:36,168 - INFO - Test plan directory: test_result\TestPlan
+2025-08-11 12:33:36,170 - INFO - Test result directory: test_result\TestPlan\2025_08_11_12_33_36
+2025-08-11 12:39:18,902 - INFO - 加载停用词：841 个
+2025-08-11 12:39:22,867 - INFO - 连接意图识别大模型：base_url:http://direct.virtaicloud.com:45181/v1，model=Qwen2_7B-chat-sft2
+2025-08-11 12:39:22,880 - INFO - 连接意图识别大模型失败: 'str' object has no attribute 'content'
+2025-08-11 12:39:22,881 - INFO - 初始化 SQL agent:
+                    Agent所使用LLM模型：client=<class 'dashscope.aigc.generation.Generation'> model_name='qwen-max' model_kwargs={} top_p=0.2 dashscope_api_key=SecretStr('**********')
+                    Agent所使用Embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='your_api_key' max_retries=5
+                    
+2025-08-11 12:39:22,882 - INFO - 连接的Sqlite数据库地址：sqlite:///E:\ai\jrai\smart-finance-bot\dataset\dataset\博金杯比赛数据.db
+2025-08-11 12:42:58,745 - INFO - 加载停用词：841 个
+2025-08-11 13:29:51,109 - INFO - 加载停用词：841 个
+2025-08-11 21:39:04,519 - INFO - 加载停用词：841 个
+2025-08-11 21:47:47,455 - INFO - 加载停用词：841 个
+2025-08-11 21:47:47,721 - INFO - 加载停用词：841 个
+2025-08-11 21:47:50,783 - INFO - Output root directory: test_result
+2025-08-11 21:47:50,784 - INFO - Test plan directory: test_result\TestPlan
+2025-08-11 21:47:50,789 - INFO - Test result directory: test_result\TestPlan\2025_08_11_21_47_50
+2025-08-11 21:47:51,115 - INFO - Output root directory: test_result
+2025-08-11 21:47:51,116 - INFO - Test plan directory: test_result\TestPlan
+2025-08-11 21:47:51,119 - INFO - Test result directory: test_result\TestPlan\2025_08_11_21_47_51
+2025-08-11 21:52:42,539 - INFO - 加载停用词：841 个
+2025-08-11 21:58:41,890 - INFO - 加载停用词：841 个
+2025-08-11 22:00:33,363 - INFO - 加载停用词：841 个
+2025-08-11 22:25:50,522 - INFO - 加载停用词：841 个
+2025-08-11 22:34:44,407 - INFO - 加载停用词：841 个
+2025-08-11 23:14:13,691 - INFO - 加载停用词：841 个
+2025-08-11 23:27:02,252 - INFO - 加载停用词：841 个
+2025-08-11 23:28:10,893 - INFO - 加载停用词：841 个
+2025-08-11 23:48:16,693 - INFO - 加载停用词：841 个
+2025-08-11 23:48:20,473 - INFO - Output root directory: test_result
+2025-08-11 23:48:20,473 - INFO - Test plan directory: test_result\TestPlan
+2025-08-11 23:48:20,475 - INFO - Test result directory: test_result\TestPlan\2025_08_11_23_48_20
+2025-08-11 23:50:00,930 - INFO - 加载停用词：841 个
+2025-08-11 23:50:02,911 - INFO - Output root directory: test_result
+2025-08-11 23:50:02,911 - INFO - Test plan directory: test_result\TestPlan
+2025-08-11 23:50:02,914 - INFO - Test result directory: test_result\TestPlan\2025_08_11_23_50_02
+2025-08-11 23:57:58,309 - INFO - 加载停用词：841 个
+2025-08-11 23:58:48,103 - INFO - 加载停用词：841 个
+2025-08-11 23:58:49,614 - INFO - Output root directory: test_result
+2025-08-11 23:58:49,615 - INFO - Test plan directory: test_result\TestPlan
+2025-08-11 23:58:49,621 - INFO - Test result directory: test_result\TestPlan\2025_08_11_23_58_49
+2025-08-12 00:08:40,357 - INFO - 加载停用词：841 个
+2025-08-12 00:08:42,649 - INFO - Output root directory: test_result
+2025-08-12 00:08:42,650 - INFO - Test plan directory: test_result\TestPlan
+2025-08-12 00:08:42,707 - INFO - Test result directory: test_result\TestPlan\2025_08_12_00_08_42
+2025-08-12 00:10:36,781 - INFO - 加载停用词：841 个
+2025-08-12 00:10:38,853 - INFO - Output root directory: test_result
+2025-08-12 00:10:38,854 - INFO - Test plan directory: test_result\TestPlan
+2025-08-12 00:10:38,857 - INFO - Test result directory: test_result\TestPlan\2025_08_12_00_10_38
+2025-08-12 00:22:22,599 - INFO - 加载停用词：841 个
+2025-08-12 00:22:24,622 - INFO - Output root directory: test_result
+2025-08-12 00:22:24,623 - INFO - Test plan directory: test_result\TestPlan
+2025-08-12 00:22:24,647 - INFO - Test result directory: test_result\TestPlan\2025_08_12_00_22_24
+2025-08-12 10:02:50,893 - INFO - 加载停用词：841 个
+2025-08-12 10:02:53,407 - INFO - Output root directory: test_result
+2025-08-12 10:02:53,408 - INFO - Test plan directory: test_result\TestPlan
+2025-08-12 10:02:53,409 - INFO - Test result directory: test_result\TestPlan\2025_08_12_10_02_53
+2025-08-12 10:05:36,611 - INFO - 加载停用词：841 个
+2025-08-12 10:05:39,980 - INFO - 连接意图识别大模型：base_url:http://direct.virtaicloud.com:45181/v1，model=Qwen2_7B-chat-sft2
+2025-08-12 10:05:39,986 - INFO - 连接意图识别大模型失败: 'str' object has no attribute 'content'
+2025-08-12 10:05:39,988 - INFO - 初始化 SQL agent:
+                    Agent所使用LLM模型：client=<class 'dashscope.aigc.generation.Generation'> model_name='qwen-max' model_kwargs={} top_p=0.2 dashscope_api_key=SecretStr('**********')
+                    Agent所使用Embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+                    
+2025-08-12 10:05:39,990 - INFO - 连接的Sqlite数据库地址：sqlite:///E:\ai\jrai\smart-finance-bot\dataset\dataset\博金杯比赛数据.db
+2025-08-12 10:19:41,700 - INFO - 加载停用词：841 个
+2025-08-12 10:22:49,417 - INFO - 加载停用词：841 个
+2025-08-12 10:26:02,712 - INFO - 加载停用词：841 个
+2025-08-12 10:26:07,970 - INFO - 连接意图识别大模型：base_url:http://direct.virtaicloud.com:45181/v1，model=Qwen2_7B-chat-sft2
+2025-08-12 10:26:07,976 - INFO - 连接意图识别大模型失败: 'str' object has no attribute 'content'
+2025-08-12 10:26:07,976 - INFO - 初始化 SQL agent:
+            Agent所使用LLM模型：client=<class 'dashscope.aigc.generation.Generation'> model_name='qwen-max' model_kwargs={} top_p=0.2 dashscope_api_key=SecretStr('**********')
+            Agent所使用Embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+        
+2025-08-12 10:26:07,977 - INFO - 连接的Sqlite数据库地址：sqlite:///E:\ai\jrai\smart-finance-bot\dataset\dataset\博金杯比赛数据.db
+2025-08-12 10:26:08,106 - INFO - 初始化llm大模型：[1mTongyi[0m
+Params: {'model_name': 'qwen-max'}
+2025-08-12 10:26:08,106 - INFO - 初始化embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+2025-08-12 10:26:10,227 - INFO - Chroma数据库连接成功，连接方式：http, host:localhost, port:8000, embed:client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+2025-08-12 10:26:10,228 - INFO - Chroma数据库的Collectname：langchain
+2025-08-12 10:26:10,228 - INFO - Chroma数据库所使用的embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+2025-08-12 10:26:10,229 - INFO - 检索器所使用的Chat模型：[1mTongyi[0m
+Params: {'model_name': 'qwen-max'}
+2025-08-12 10:26:10,229 - INFO - 使用的检索器类: SimpleRetrieverWrapper
+2025-08-12 10:26:10,230 - INFO - 初始化程序框架：Finance
+2025-08-12 10:26:10,230 - INFO - 初始化llm大模型：[1mTongyi[0m
+Params: {'model_name': 'qwen-max'}
+2025-08-12 10:26:10,231 - INFO - 初始化embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+2025-08-12 10:26:11,950 - INFO - Chroma数据库连接成功，连接方式：http, host:localhost, port:8000, embed:client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+2025-08-12 10:26:11,951 - INFO - Chroma数据库的Collectname：langchain
+2025-08-12 10:26:11,951 - INFO - Chroma数据库所使用的embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+2025-08-12 10:26:11,952 - INFO - 检索器所使用的Chat模型：[1mTongyi[0m
+Params: {'model_name': 'qwen-max'}
+2025-08-12 10:26:11,953 - INFO - 使用的检索器类: SimpleRetrieverWrapper
+2025-08-12 10:26:11,953 - INFO - 初始化自定义的Retriever
+2025-08-12 10:26:11,955 - INFO - 已启用 ContextualCompressionRetriever
+2025-08-12 10:26:11,956 - INFO - 已启用 ElasticsearchRetriever
+2025-08-12 10:26:11,956 - INFO - FinanceBotEx连接数据库: sqlite:///E:\ai\jrai\smart-finance-bot\dataset\dataset\博金杯比赛数据.db
+2025-08-12 10:26:12,212 - INFO - 初始化程序框架：FinanceEx
+2025-08-12 10:35:31,224 - INFO - None
+2025-08-12 10:35:34,150 - INFO - None
+2025-08-12 10:35:36,773 - INFO - MultiQuery生成的检索语句：
+2025-08-12 10:35:36,774 - INFO - 中国移动的市场分析
+2025-08-12 10:35:36,774 - INFO - 中国移动的战略分析
+2025-08-12 10:35:36,774 - INFO - 对中国移动公司的全面解析
+2025-08-12 10:35:36,775 - INFO - MultiQuery检索到的资料文件：
+2025-08-12 10:35:36,775 - INFO - MultiQuery检索到资料文件个数：0
+2025-08-12 10:35:36,776 - INFO - 初始化ES服务连接：https://elastic:123abc@localhost:9200
+2025-08-12 10:35:58,624 - ERROR - 连接 Elasticsearch 失败: Connection error caused by: ConnectionError(Connection error caused by: NewConnectionError(<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC87C7D0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。))
+2025-08-12 10:35:58,652 - INFO - None
+2025-08-12 10:36:31,918 - INFO - None
+2025-08-12 10:36:31,918 - INFO - 查询过程：
+2025-08-12 10:36:31,918 - INFO - 【agent】: 中国移动，分析。
+2025-08-12 10:36:31,919 - INFO - 【agent】: 
+2025-08-12 10:36:31,919 - INFO - 【agent】: Error: ConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC87CE00>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。', errors=(ConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC87C7D0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。', errors=(NewConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC87C7D0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。'),)), ConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC87C9E0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。', errors=(NewConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC87C9E0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。'),)), ConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC87CBF0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。', errors=(NewConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC87CBF0>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。'),))))
+ Please fix your mistakes.
+2025-08-12 10:36:31,921 - INFO - 【agent】: 目前看来，我无法访问到有关“中国移动”的分析资料，可能是由于网络问题导致的。我会继续尝试其他方式来获取相关信息。如果需要，您可以提供更具体的问题或者关注点，这样我可以更有针对性地为您提供帮助。同时，请确保您的请求符合所有相关的使用规定。您还有其他想要了解的内容吗？例如财务状况、市场地位或者是5G发展等方面的分析？
+  
+
+看起来在尝试连接到数据源时遇到了网络问题，这可能是因为当前环境下的网络限制或目标服务器暂时不可用。不过，我可以基于已有的知识给您提供一些关于中国移动的基本分析信息。
+
+1. **公司概况**：中国移动有限公司（China Mobile Limited）是全球最大的移动通信运营商之一，主要在中国大陆及香港地区提供移动语音、数据、宽带以及其他数字化服务。
+
+2. **市场地位**：作为中国三大电信运营商之首，中国移动拥有庞大的用户基础，在4G和5G网络建设方面处于领先地位。随着5G商用化进程加快，中国移动正积极布局相关业务以保持其竞争优势。
+
+3. **财务表现**：通常情况下，中国移动能够保持稳定的收入增长和较高的利润率。但具体的财务指标如营收增长率、净利润等需要查阅最新的财报才能给出准确数字。
+
+4. **发展战略**：近年来，除了传统的通信服务外，中国移动也在大力发展云计算、物联网(IoT)、大数据等新兴领域，并通过与国内外多家企业合作推动技术创新与发展。
+
+如果您有更详细的分析需求或其他特定方面的兴趣，请告诉我，我将尽力提供更多相关信息。另外，对于最新最详尽的数据和报告，建议直接访问官方渠道或专业金融资讯平台获取。
+2025-08-12 10:36:31,924 - INFO - 最终结果: 目前看来，我无法访问到有关“中国移动”的分析资料，可能是由于网络问题导致的。我会继续尝试其他方式来获取相关信息。如果需要，您可以提供更具体的问题或者关注点，这样我可以更有针对性地为您提供帮助。同时，请确保您的请求符合所有相关的使用规定。您还有其他想要了解的内容吗？例如财务状况、市场地位或者是5G发展等方面的分析？
+  
+
+看起来在尝试连接到数据源时遇到了网络问题，这可能是因为当前环境下的网络限制或目标服务器暂时不可用。不过，我可以基于已有的知识给您提供一些关于中国移动的基本分析信息。
+
+1. **公司概况**：中国移动有限公司（China Mobile Limited）是全球最大的移动通信运营商之一，主要在中国大陆及香港地区提供移动语音、数据、宽带以及其他数字化服务。
+
+2. **市场地位**：作为中国三大电信运营商之首，中国移动拥有庞大的用户基础，在4G和5G网络建设方面处于领先地位。随着5G商用化进程加快，中国移动正积极布局相关业务以保持其竞争优势。
+
+3. **财务表现**：通常情况下，中国移动能够保持稳定的收入增长和较高的利润率。但具体的财务指标如营收增长率、净利润等需要查阅最新的财报才能给出准确数字。
+
+4. **发展战略**：近年来，除了传统的通信服务外，中国移动也在大力发展云计算、物联网(IoT)、大数据等新兴领域，并通过与国内外多家企业合作推动技术创新与发展。
+
+如果您有更详细的分析需求或其他特定方面的兴趣，请告诉我，我将尽力提供更多相关信息。另外，对于最新最详尽的数据和报告，建议直接访问官方渠道或专业金融资讯平台获取。
+2025-08-12 11:21:26,579 - INFO - None
+2025-08-12 11:21:28,666 - INFO - None
+2025-08-12 11:21:32,998 - INFO - MultiQuery生成的检索语句：
+2025-08-12 11:21:32,999 - INFO - 千红药业的股票市场表现如何？
+2025-08-12 11:21:32,999 - INFO - 分析一下千红药业的股票趋势和投资潜力。
+2025-08-12 11:21:32,999 - INFO - 关于千红药业的股票，有哪些重要的财务指标值得关注？
+2025-08-12 11:21:32,999 - INFO - MultiQuery检索到的资料文件：
+2025-08-12 11:21:33,000 - INFO - MultiQuery检索到资料文件个数：0
+2025-08-12 11:21:33,000 - INFO - 初始化ES服务连接：https://elastic:123abc@localhost:9200
+2025-08-12 11:21:49,461 - ERROR - 连接 Elasticsearch 失败: Connection error caused by: ConnectionError(Connection error caused by: NewConnectionError(<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC87FF20>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。))
+2025-08-12 11:21:49,468 - INFO - None
+2025-08-12 11:22:23,580 - INFO - None
+2025-08-12 11:22:23,580 - INFO - 查询过程：
+2025-08-12 11:22:23,581 - INFO - 【agent】: 千红药业，股票分析
+
+2025-08-12 11:22:23,581 - INFO - 【agent】: 
+2025-08-12 11:22:23,582 - INFO - 【agent】: Error: ConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC5EC530>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。', errors=(ConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC87FF20>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。', errors=(NewConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC87FF20>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。'),)), ConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC5EC110>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。', errors=(NewConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC5EC110>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。'),)), ConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC5EC320>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。', errors=(NewConnectionError('<elastic_transport._node._urllib3_chain_certs.HTTPSConnection object at 0x00000262AC5EC320>: Failed to establish a new connection: [WinError 10061] 由于目标计算机积极拒绝，无法连接。'),))))
+ Please fix your mistakes.
+2025-08-12 11:22:23,585 - INFO - 【agent】: 看来在尝试连接到数据源以获取“千红药业”的股票分析信息时遇到了网络问题。不过，我可以基于一般性的知识为您提供一些关于如何进行股票分析的指导思路，以及您可以关注的一些关键点。
+
+### 股票分析的基本方法
+
+1. **基本面分析**：评估公司的财务健康状况、行业地位、管理团队质量等非市场因素。
+   - **财务报表**：查看利润表、资产负债表和现金流量表，了解公司的盈利能力、资产结构及现金流情况。
+   - **行业背景**：研究所在行业的增长潜力、竞争格局以及政策环境对行业的影响。
+   - **公司治理**：考察管理层的经验与能力，以及公司治理结构是否健全。
+
+2. **技术面分析**：通过图表和技术指标来预测股价走势。
+   - **趋势线**：识别支撑位和阻力位，帮助判断未来价格变动方向。
+   - **成交量**：观察成交量变化，辅助判断买卖力量对比。
+   - **技术指标**：如MACD、RSI等，用于衡量超买超卖状态或动量强度。
+
+3. **宏观经济因素**：考虑利率水平、经济增长率等因素对公司业绩可能产生的影响。
+
+### 对于千红药业的关注点
+
+- **产品管线**：了解其主要药品种类及其市场表现，特别是是否有创新药物正在研发中。
+- **政策支持**：医药行业受国家政策影响较大，需关注相关政策导向。
+- **研发投入**：持续的研发投入是保持竞争力的关键，注意该公司在这方面的投入比例。
+- **市场份额**：分析其在国内乃至国际市场上的占有率及其变化趋势。
+
+由于无法直接访问最新的研究报告或数据，请您参考上述建议自行查找相关信息。对于最新最准确的数据，建议查阅官方公告、证券交易所发布的资料或者专业的财经新闻网站。如果您有更具体的问题，比如想要了解某个特定方面的细节，也欢迎继续提问！
+2025-08-12 11:22:23,589 - INFO - 最终结果: 看来在尝试连接到数据源以获取“千红药业”的股票分析信息时遇到了网络问题。不过，我可以基于一般性的知识为您提供一些关于如何进行股票分析的指导思路，以及您可以关注的一些关键点。
+
+### 股票分析的基本方法
+
+1. **基本面分析**：评估公司的财务健康状况、行业地位、管理团队质量等非市场因素。
+   - **财务报表**：查看利润表、资产负债表和现金流量表，了解公司的盈利能力、资产结构及现金流情况。
+   - **行业背景**：研究所在行业的增长潜力、竞争格局以及政策环境对行业的影响。
+   - **公司治理**：考察管理层的经验与能力，以及公司治理结构是否健全。
+
+2. **技术面分析**：通过图表和技术指标来预测股价走势。
+   - **趋势线**：识别支撑位和阻力位，帮助判断未来价格变动方向。
+   - **成交量**：观察成交量变化，辅助判断买卖力量对比。
+   - **技术指标**：如MACD、RSI等，用于衡量超买超卖状态或动量强度。
+
+3. **宏观经济因素**：考虑利率水平、经济增长率等因素对公司业绩可能产生的影响。
+
+### 对于千红药业的关注点
+
+- **产品管线**：了解其主要药品种类及其市场表现，特别是是否有创新药物正在研发中。
+- **政策支持**：医药行业受国家政策影响较大，需关注相关政策导向。
+- **研发投入**：持续的研发投入是保持竞争力的关键，注意该公司在这方面的投入比例。
+- **市场份额**：分析其在国内乃至国际市场上的占有率及其变化趋势。
+
+由于无法直接访问最新的研究报告或数据，请您参考上述建议自行查找相关信息。对于最新最准确的数据，建议查阅官方公告、证券交易所发布的资料或者专业的财经新闻网站。如果您有更具体的问题，比如想要了解某个特定方面的细节，也欢迎继续提问！
+2025-08-12 14:41:19,024 - INFO - 加载停用词：841 个
+2025-08-12 14:42:19,172 - INFO - 加载停用词：841 个
+2025-08-12 14:42:24,988 - INFO - 连接意图识别大模型：base_url:http://direct.virtaicloud.com:45181/v1，model=Qwen2_7B-chat-sft2
+2025-08-12 14:42:24,988 - INFO - 连接意图识别大模型失败: 'str' object has no attribute 'content'
+2025-08-12 14:42:24,988 - INFO - 初始化 SQL agent:
+            Agent所使用LLM模型：client=<class 'dashscope.aigc.generation.Generation'> model_name='qwen-max' model_kwargs={} top_p=0.2 dashscope_api_key=SecretStr('**********')
+            Agent所使用Embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+        
+2025-08-12 14:42:24,988 - INFO - 连接的Sqlite数据库地址：sqlite:///E:\ai\jrai\smart-finance-bot\dataset\dataset\博金杯比赛数据.db
+2025-08-12 14:42:25,376 - INFO - 初始化llm大模型：[1mTongyi[0m
+Params: {'model_name': 'qwen-max'}
+2025-08-12 14:42:25,376 - INFO - 初始化embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+2025-08-12 14:42:27,996 - INFO - Chroma数据库连接成功，连接方式：http, host:localhost, port:8000, embed:client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+2025-08-12 14:42:28,011 - INFO - Chroma数据库的Collectname：langchain
+2025-08-12 14:42:28,011 - INFO - Chroma数据库所使用的embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+2025-08-12 14:42:28,011 - INFO - 检索器所使用的Chat模型：[1mTongyi[0m
+Params: {'model_name': 'qwen-max'}
+2025-08-12 14:42:28,011 - INFO - 使用的检索器类: SimpleRetrieverWrapper
+2025-08-12 14:42:28,011 - INFO - 初始化程序框架：Finance
+2025-08-12 14:42:28,011 - INFO - 初始化llm大模型：[1mTongyi[0m
+Params: {'model_name': 'qwen-max'}
+2025-08-12 14:42:28,020 - INFO - 初始化embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+2025-08-12 14:42:29,249 - INFO - Chroma数据库连接成功，连接方式：http, host:localhost, port:8000, embed:client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+2025-08-12 14:42:29,250 - INFO - Chroma数据库的Collectname：langchain
+2025-08-12 14:42:29,250 - INFO - Chroma数据库所使用的embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='sk-a1fa73897e0d4db99410841f1eae17c2' max_retries=5
+2025-08-12 14:42:29,250 - INFO - 检索器所使用的Chat模型：[1mTongyi[0m
+Params: {'model_name': 'qwen-max'}
+2025-08-12 14:42:29,250 - INFO - 使用的检索器类: SimpleRetrieverWrapper
+2025-08-12 14:42:29,250 - INFO - 初始化自定义的Retriever
+2025-08-12 14:42:29,250 - INFO - 已启用 ContextualCompressionRetriever
+2025-08-12 14:42:29,250 - INFO - 已启用 ElasticsearchRetriever
+2025-08-12 14:42:29,250 - INFO - FinanceBotEx连接数据库: sqlite:///E:\ai\jrai\smart-finance-bot\dataset\dataset\博金杯比赛数据.db
+2025-08-12 14:42:29,351 - INFO - 初始化程序框架：FinanceEx
+2025-08-12 20:03:32,768 - INFO - None
+2025-08-12 20:03:37,247 - INFO - None
+2025-08-12 20:03:37,247 - INFO - 查询过程：
+2025-08-12 20:03:37,248 - INFO - 【agent】: 分析600196
+2025-08-12 20:03:37,248 - INFO - 【agent】: 您想分析股票代码为600196的哪方面信息？例如，您可能想要了解其财务状况、市场表现、行业地位等。请提供更具体的需求以便我为您提供相关信息。如果需要查询该股票的具体数据，请告诉我您感兴趣的指标或时间段。
+2025-08-12 20:03:37,249 - INFO - 最终结果: 您想分析股票代码为600196的哪方面信息？例如，您可能想要了解其财务状况、市场表现、行业地位等。请提供更具体的需求以便我为您提供相关信息。如果需要查询该股票的具体数据，请告诉我您感兴趣的指标或时间段。
+2025-08-12 20:04:10,382 - INFO - None
+2025-08-12 20:04:29,479 - INFO - None
+2025-08-12 20:04:29,480 - INFO - 查询过程：
+2025-08-12 20:04:29,480 - INFO - 【agent】: 市场表现
+2025-08-12 20:04:29,481 - INFO - 【agent】: 为了分析股票代码为600196的市场表现，我们需要获取一些关键数据，比如最近的收盘价、前收盘价等。这些信息可以帮助我们计算出涨跌幅、日收益率等指标来评估其市场表现。
+
+不过，在我能够直接访问实时或历史股市数据之前，我需要先确认您是否有具体的数据来源或者是否希望通过公开API（如新浪财经、东方财富网等）来获取相关信息。如果您可以提供具体的数值，我可以立即使用这些数据来进行相关计算。请告诉我您希望如何继续。
+
+如果方便的话，请提供最近一个交易日的收盘价以及前一个交易日的收盘价，这样我们可以开始进行初步的市场表现分析。
+如果没有现成的数据，您也可以告诉我，我们将考虑其他方式来获取所需的信息。
+2025-08-12 20:04:29,483 - INFO - 最终结果: 为了分析股票代码为600196的市场表现，我们需要获取一些关键数据，比如最近的收盘价、前收盘价等。这些信息可以帮助我们计算出涨跌幅、日收益率等指标来评估其市场表现。
+
+不过，在我能够直接访问实时或历史股市数据之前，我需要先确认您是否有具体的数据来源或者是否希望通过公开API（如新浪财经、东方财富网等）来获取相关信息。如果您可以提供具体的数值，我可以立即使用这些数据来进行相关计算。请告诉我您希望如何继续。
+
+如果方便的话，请提供最近一个交易日的收盘价以及前一个交易日的收盘价，这样我们可以开始进行初步的市场表现分析。
+如果没有现成的数据，您也可以告诉我，我们将考虑其他方式来获取所需的信息。
+2025-08-12 20:05:37,549 - INFO - None
+2025-08-12 20:05:45,757 - INFO - None
+2025-08-12 20:05:45,758 - INFO - 查询过程：
+2025-08-12 20:05:45,759 - INFO - 【agent】: 27.70
+
+2025-08-12 20:05:45,760 - INFO - 【agent】: 您提供了股票代码600196最近一个交易日的收盘价为27.70元。为了进一步分析其市场表现，我们还需要知道前一个交易日的收盘价。请提供该数据，这样我就可以帮您计算涨跌幅和日收益率了。如果还有其他相关信息（如开盘价、最高价、最低价等），也欢迎一并告知以便进行更全面的分析。如果没有额外信息，仅凭这两个价格也能完成基本的市场表现评估。
+2025-08-12 20:05:45,761 - INFO - 最终结果: 您提供了股票代码600196最近一个交易日的收盘价为27.70元。为了进一步分析其市场表现，我们还需要知道前一个交易日的收盘价。请提供该数据，这样我就可以帮您计算涨跌幅和日收益率了。如果还有其他相关信息（如开盘价、最高价、最低价等），也欢迎一并告知以便进行更全面的分析。如果没有额外信息，仅凭这两个价格也能完成基本的市场表现评估。
+2025-08-12 20:06:41,130 - INFO - None
+2025-08-12 20:06:45,089 - INFO - None
+2025-08-12 20:06:45,095 - INFO - None
+2025-08-12 20:06:52,007 - INFO - None
+2025-08-12 20:06:52,016 - INFO - None
+2025-08-12 20:07:08,552 - INFO - None
+2025-08-12 20:07:08,552 - INFO - 查询过程：
+2025-08-12 20:07:08,553 - INFO - 【agent】: 28.28，28.29，27.36
+
+2025-08-12 20:07:08,553 - INFO - 【agent】: 
+2025-08-12 20:07:08,554 - INFO - 【agent】: -2.08554259455638
+2025-08-12 20:07:08,554 - INFO - 【agent】: 
+2025-08-12 20:07:08,555 - INFO - 【agent】: -0.020855425945563798
+2025-08-12 20:07:08,555 - INFO - 【agent】: 根据提供的数据，对于股票代码600196：
+
+- 最新收盘价：27.70元
+- 前一交易日收盘价：28.29元
+
+我们计算得出：
+- 涨跌幅为 -2.09%，表示该股票相比前一个交易日下跌了约2.09%。
+- 日收益率为 -2.09%，同样反映了股价的下降趋势。
+
+这些指标显示，在最近的一个交易日中，这只股票经历了轻微的价格下滑。如果您有更多具体的问题或需要进一步分析（如与其他市场指数比较、查看历史走势等），请告诉我！另外，如果还有其他相关数据点（例如开盘价28.28元和最低价27.36元）您希望我如何利用它们进行更详细的分析，请指示。
+2025-08-12 20:07:08,556 - INFO - 最终结果: 根据提供的数据，对于股票代码600196：
+
+- 最新收盘价：27.70元
+- 前一交易日收盘价：28.29元
+
+我们计算得出：
+- 涨跌幅为 -2.09%，表示该股票相比前一个交易日下跌了约2.09%。
+- 日收益率为 -2.09%，同样反映了股价的下降趋势。
+
+这些指标显示，在最近的一个交易日中，这只股票经历了轻微的价格下滑。如果您有更多具体的问题或需要进一步分析（如与其他市场指数比较、查看历史走势等），请告诉我！另外，如果还有其他相关数据点（例如开盘价28.28元和最低价27.36元）您希望我如何利用它们进行更详细的分析，请指示。

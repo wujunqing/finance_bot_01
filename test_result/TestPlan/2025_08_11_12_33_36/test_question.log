@@ -1,0 +1,3 @@
+2025-08-11 12:33:36,173 - INFO - 初始化llm大模型：[1mTongyi[0m
+Params: {'model_name': 'qwen-max'}
+2025-08-11 12:33:36,173 - INFO - 初始化embed模型：client=<class 'dashscope.embeddings.text_embedding.TextEmbedding'> model='text-embedding-v3' dashscope_api_key='your_api_key' max_retries=5

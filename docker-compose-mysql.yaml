@@ -1,0 +1,13 @@
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: a1b2c3d4             # 设置 root 用户密码
+      MYSQL_DATABASE: smart_bot                 # 创建默认数据库
+      MYSQL_USER: smart_admin                   # 创建用户
+      MYSQL_PASSWORD: 123abc                    # 设置用户密码
+    ports:
+      - "3306:3306"                             # 映射端口
+    volumes:
+      - ./docker/mysql:/var/lib/mysql          # 数据持久化到指定目录

@@ -1,0 +1,20 @@
+{
+	"pdf_file": {
+		"train": {
+			"meta": "pdf_file.csv",
+			"file": "pdf"
+		}
+	},
+"sqlite_db": {
+        "train": {
+			"meta": "sqlite_db.csv",
+			"file": "dataset"
+		}
+	},
+"pdf_txt_file": {
+        "train": {
+			"meta": "pdf_txt_file.csv",
+			"file": "dataset"
+		}
+	}
+}
