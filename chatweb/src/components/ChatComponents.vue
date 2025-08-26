@@ -2,7 +2,7 @@
 import {
     NButton, NInput, NIcon, NButtonGroup, NSpin,
     NInputGroup, NCard, NModal, NTabs, NTabPane, NInputNumber, NSelect,
-    NTooltip,
+    NTooltip,NDivider,NTag,
     useMessage
 } from 'naive-ui'
 import { GameControllerOutline, GameController } from '@vicons/ionicons5'
@@ -128,7 +128,7 @@ function addLeftListEle() {
     const uuid = randomUuid()
     left_data.left_list.push({
         uuid: uuid,
-        title: `新的对话${uuid}`,
+        title: `新对话${new Date()}`,
         enable_edit: false
     })
     left_data.chat.push({
@@ -201,6 +201,8 @@ function submit(index) {
 
 // 发送消息
 function addMessageListItem(uuid) {
+	console.log("=========uuid=========="+uuid)
+	
     if (input_area_value.value.length <= 2) {
         message.info('内容长度不得小于2')
         return false
@@ -213,6 +215,8 @@ function addMessageListItem(uuid) {
         reversion: true,
         msgload: false
     })
+	/* ----------新加的------------- */
+	left_data.left_list[index].title = input_area_value.value;
 
     const body = {
       config: {},
@@ -243,6 +247,10 @@ function addMessageListItem(uuid) {
   } else {
     startRequest(index, body, url); // 传递 URL
   }
+  
+  
+  //let index = left_data.left_list.findIndex(v => v.uuid == uuid);
+  //left_data.left_list[index].title = input_area_value.value;
 }
 
 function buildMessagePromt(index) {
@@ -467,19 +475,27 @@ async function dom2img() {
       <!-- 非移动端模式下侧边栏的样式 -->
       <div class="sidebar" :class="controlSidebarHidden ? 'w-0' : ''">
         <div class="hidden sm:flex sm:flex-col sm:h-screen sm:border">
+			<div class="basis-1/12 flex justify-center items-center">
+			  <n-tag :bordered="false" type="info" :strong="true">
+				财智通鉴
+			  </n-tag>
+			</div>
           <!-- 新建按钮 -->
           <div class="basis-1/12 flex justify-center items-center">
-            <n-button class="w-4/5" @click="addLeftListEle">新的会话</n-button>
+            <n-button class="w-4/5" :bordered="true" type="info" ghost @click="addLeftListEle">新对话</n-button>
           </div>
           <!-- 列表 -->
           <div class="basis-10/12 overflow-auto border">
+			  <n-divider title-placement="center">
+			      近期对话
+			    </n-divider>
             <div v-for="item in left_data.left_list" :key="item.uuid">
               <router-link :to="`/chat/${item.uuid}`" class="sidebar-item">
                 <div class="w-4/5 flex items-center">
                   <n-icon size="medium">
                     <game-controller-outline />
                   </n-icon>
-                  <div class="truncate mx-2" style="color: #000;">
+                  <div style="color: #000;">
                     <p v-if="!item.enable_edit" class="truncate h-full">{{ item.title }}</p>
                     <n-input v-else type="text" size="small" class="h-full" v-model:value="item.title" @keyup.enter="submit(item.uuid)" />
                   </div>
@@ -498,20 +514,20 @@ async function dom2img() {
             </div>
           </div>
           <!-- 设置页面 -->
-          <div class="footer flex flex-col items-center justify-between p-4 h-15">
-            <div class="user-info font-bold text-lg">金融千问机器人</div>
-            <div class="logo-container relative"> <!-- 添加一个容器 -->
+          <!-- <div class="footer flex flex-col items-center justify-between p-4 h-15">
+            <div class="user-info font-bold text-lg">财智通鉴问机器人</div>
+            <div class="logo-container relative"> 
               <img src="../assets/background.png" alt="Logo" class="logo" />
             </div>
             <div class="robot-description text-sm text-gray-600 mt-2">
-              金融千问机器人，通过RAG对既有的PDF招股书建立了知识库，同时借助大模型+Agent对金融SQL数据库进行动态查询，旨在为用户提供快速、准确的金融信息和咨询服务。
+              财智通鉴问机器人，通过RAG对既有的PDF招股书建立了知识库，同时借助大模型+Agent对金融SQL数据库进行动态查询，旨在为用户提供快速、准确的金融信息和咨询服务。
             </div>
             <div class="settings-icon">
               <n-icon @click="showSettingFunc()">
                 <SettingsOutline />
               </n-icon>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -525,11 +541,13 @@ async function dom2img() {
           </n-button>
         </div>
         <div v-if="!controlSidebarHidden" class="mobile-sidebar">
-          <div class="w-full flex flex-col h-screen border">
+          <div class="w-full flex flex-col h-screen">
             <div class="basis-1/12 flex justify-center items-center">
-              <n-button class="w-4/5" @click="addLeftListEle">新的对话</n-button>
+              <n-button class="w-4/5" @click="addLeftListEle">新对话</n-button>
             </div>
+			<el-divider></el-divider>
             <div class="basis-10/12 overflow-auto border">
+				<el-divider style="text-align: center;">近期对话</el-divider>
               <div v-for="item in left_data.left_list" :key="item.uuid">
                 <router-link :to="`/chat/${item.uuid}`" class="sidebar-item">
                   <div class="w-4/5 flex items-center">
@@ -555,7 +573,7 @@ async function dom2img() {
               </div>
             </div>
             <div class="footer flex items-center justify-between p-4 h-15">
-              <div class="user-info font-bold">金融千问机器人</div>
+              <div class="user-info font-bold">财智通鉴问机器人</div>
               <div class="settings-icon">
                 <n-icon @click="showSettingFunc()">
                   <SettingsOutline />
@@ -614,7 +632,7 @@ async function dom2img() {
                   下载当前会话为图片
                 </n-tooltip>
                 <a href="" id="link" class="hidden"></a>
-                <n-input show-count @keyup.ctrl.enter="addMessageListItem(route.params.uuid)" placeholder="Ctrl+Enter 发送消息，发送消息长度需要大于2个字" v-model:value="input_area_value" type="textarea" size="tiny" :autosize="{ minRows: 2, maxRows: 5 }" />
+                <n-input show-count @keyup.ctrl.enter="addMessageListItem(route.params.uuid)" placeholder="有什么可以帮助您?" v-model:value="input_area_value" type="textarea" size="tiny" :autosize="{ minRows: 5, maxRows: 10 }" clearable/>
                 <n-button ghost class="h-auto" @click="addMessageListItem(route.params.uuid)">
                   发送
                 </n-button>
@@ -661,8 +679,8 @@ async function dom2img() {
 
 <style scoped>
 .router-link-active {
-  border-color: #18a058;
-  color: #18a058;
+  border-color: #ff5500;
+  color: #ff5500;
 }
 
 .loading-container {
@@ -678,7 +696,7 @@ async function dom2img() {
 }
 
 .sidebar {
-  width: 20%;
+  width: 35%;
   height: 100%;
 }
 
@@ -687,7 +705,7 @@ async function dom2img() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid gray;
+  //border: 1px solid gray;
   border-radius: 0.375rem; /* rounded-md */
   padding: 0.5rem;
   color: white;
