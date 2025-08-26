@@ -20,3 +20,10 @@ jieba
 nltk
 mysql-connector-python
 PyMySQL
+yfinance>=0.2.18
+pandas>=1.5.0
+scikit-learn>=1.3.0
+torch>=2.0.0
+numpy>=1.24.0
+
+
