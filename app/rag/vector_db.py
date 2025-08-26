@@ -93,3 +93,11 @@ class MilvusDB(VectorDB):
 
     def get_store(self):
         return self.store
+
+# from sentence_transformers import SentenceTransformer;
+# embed = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+# # 在ChromaDB初始化时使用新的集合名称
+# vector_db = ChromaDB(
+#     embed=embed,
+#     collection_name="finance_docs_384"  # 新的集合名称
+# )

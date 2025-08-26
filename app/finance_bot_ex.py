@@ -1,21 +1,46 @@
-import datetime
-import settings
-from langgraph.prebuilt import create_react_agent
-from langchain.tools.retriever import create_retriever_tool
-from langchain_community.utilities import SQLDatabase
-from langchain_community.agent_toolkits import SQLDatabaseToolkit
-from langchain_core.prompts import SystemMessagePromptTemplate
-from langchain_core.prompts import HumanMessagePromptTemplate
+import sys
+import os
+import json
+from typing import Union, TypedDict, Annotated, List
+import operator
+from datetime import datetime
+
+from langchain_core.messages import BaseMessage
+from langchain_core.agents import AgentAction, AgentFinish
+from langchain_core.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate
 from langchain_core.prompts import ChatPromptTemplate
+from langchain.tools.retriever import create_retriever_tool
+from langchain_community.agent_toolkits import SQLDatabaseToolkit
+from langchain_community.utilities import SQLDatabase
+from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
+
+# 添加输入编码处理
+# 更安全的输入编码处理
+# if sys.platform.startswith('win'):
+#     import codecs
+#     import io
+#     
+#     # 检查是否在交互式环境中
+#     if hasattr(sys.stdout, 'isatty') and sys.stdout.isatty():
+#         try:
+#             # 只在交互式终端中重新配置编码
+#             sys.stdout = codecs.getwriter('utf-8')(sys.stdout.detach())
+#             sys.stderr = codecs.getwriter('utf-8')(sys.stderr.detach())
+#         except (AttributeError, io.UnsupportedOperation, ValueError):
+#             # 如果无法重新配置，则跳过
+#             pass
+#     else:
+#         # 在非交互式环境（如服务器）中，设置环境变量
+#         import os
+#         os.environ['PYTHONIOENCODING'] = 'utf-8'
+
+from stock_analyzer import StockAnalyzer
+import settings
 from utils.logger_config import LoggerManager
 from rag.vector_db import ChromaDB
 from rag.vector_db import MilvusDB
 from rag.rag import RagManager
-from typing import TypedDict, Annotated, List, Union
-from langchain_core.agents import AgentAction, AgentFinish
-from langchain_core.messages import BaseMessage
-import operator
 
 logger = LoggerManager().logger
 
@@ -82,6 +107,10 @@ class AgentState(TypedDict):
 
 class FinanceBotEx:
     def __init__(self, llm=settings.LLM, chat=settings.CHAT, embed=settings.EMBED, vector_db_type='chroma'):
+        # 设置输入编码
+        if hasattr(sys.stdin, 'reconfigure'):
+            sys.stdin.reconfigure(encoding='utf-8')
+        
         self.llm = llm
         self.chat = chat
         self.embed = embed
@@ -136,12 +165,17 @@ class FinanceBotEx:
 
     @staticmethod
     def create_sys_prompt():
-        system_prompt = """你是一位金融助手，可以帮助用户查询数据库中的信息。
+        system_prompt = """你是一位金融助手，可以帮助用户查询数据库中的信息和预测股价。
             你要尽可能的回答用户提出的问题，为了更好的回答问题，你可以使用工具进行多轮的尝试。
 
             # 关于用户提出的问题:
             1、如果用户的问题中包含多个问题，请将问题分解为单个问题并逐个回答。
             
+            # 关于股价预测工具的使用：
+            1、当用户询问股票价格预测时，使用predict_stock_price工具。
+            2、该工具可以预测下一交易日的收盘价、最高价和最低价。
+            3、股票代码格式：中国股票使用'000001.SZ'或'000001.SS'，美股使用'AAPL'等。
+            4、预测结果包含置信度，请向用户说明预测的不确定性。
                                                 
             # 关于retriever_tool工具的使用：
             1、你需要结合对检索出来的上下文进行回答问题。
@@ -198,7 +232,7 @@ class FinanceBotEx:
         # 创建系统Prompt提示语
         system_prompt = self.create_sys_prompt()
     
-        # 创建Agent - 移除state_modifier参数
+        # 创建Agent - 添加股价相关工具
         agent_executor = create_react_agent(
             self.chat,
             tools=[
@@ -207,6 +241,8 @@ class FinanceBotEx:
                 calculate_stock_daily_return,
                 calculate_stock_annualized_return, 
                 calculate_stock_limit_up,
+                predict_stock_price,  # 股价预测工具（包含当前价格）
+                get_current_stock_price,  # 新增：独立的当前股价工具
                 retriever_tool] + sql_tools,
             checkpointer=MemorySaver()
         )
@@ -289,3 +325,105 @@ class FinanceBotEx:
         # return prompt | agent_executor | StrOutputParser()
 
         # return prompt | self.chat | agent_executor | StrOutputParser()
+
+
+# 定义股价预测工具函数
+def convert_to_json_serializable(obj):
+    """将numpy类型转换为JSON可序列化的Python原生类型"""
+    import numpy as np
+    
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, (np.float32, np.float64)):
+        return float(obj)
+    elif isinstance(obj, (np.int32, np.int64)):
+        return int(obj)
+    elif isinstance(obj, dict):
+        return {key: convert_to_json_serializable(value) for key, value in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_to_json_serializable(item) for item in obj]
+    else:
+        return obj
+
+
+def predict_stock_price(symbol: str) -> str:
+    """预测股票价格
+    
+    Args:
+        symbol: 股票代码，例如 '000001.SZ' 或 'AAPL'
+        
+    Returns:
+        包含预测结果和当前价格的JSON字符串
+    """
+    try:
+        # 初始化股票分析器
+        analyzer = StockAnalyzer(symbol)
+        
+        # 获取当前股价信息
+        current_price_info = analyzer.get_current_price()
+        
+        # 获取历史数据
+        df = analyzer.get_historical_data(period="1y")
+        
+        if df is None or len(df) == 0:
+            return json.dumps({
+                "error": "无法获取股票历史数据",
+                "symbol": symbol,
+                "current_price": convert_to_json_serializable(current_price_info)
+            }, ensure_ascii=False)
+        
+        # 调用预测方法，传递df参数
+        result = analyzer.predict_next_day(df)
+        
+        # 处理model_performance中的numpy类型
+        model_performance = convert_to_json_serializable(result.get('model_performance', {}))
+        
+        # 处理当前价格信息中的numpy类型
+        current_price_data = convert_to_json_serializable(current_price_info)
+        
+        return json.dumps({
+            "symbol": symbol,
+            "current_price": current_price_data,
+            "prediction": {
+                "next_day_close": float(result.get('next_day_close', result.get('close', 0))),
+                "next_day_high": float(result.get('next_day_high', result.get('high', 0))),
+                "next_day_low": float(result.get('next_day_low', result.get('low', 0))),
+                "date": result.get('date', '').strftime('%Y-%m-%d') if result.get('date') else '',
+                "confidence": float(result.get('confidence', 0)),
+                "model_performance": model_performance
+            }
+        }, ensure_ascii=False)
+        
+    except Exception as e:
+        return json.dumps({
+            "error": f"股价预测失败: {str(e)}",
+            "symbol": symbol
+        }, ensure_ascii=False)
+
+
+def get_current_stock_price(symbol: str) -> str:
+    """获取股票当前价格信息
+    
+    Args:
+        symbol: 股票代码，例如 '000001.SZ' 或 'AAPL'
+        
+    Returns:
+        包含当前股价信息的JSON字符串
+    """
+    try:
+        # 初始化股票分析器
+        analyzer = StockAnalyzer(symbol)
+        
+        # 获取当前股价信息
+        result = analyzer.get_current_price()
+        
+        # 处理可能的numpy类型
+        result = convert_to_json_serializable(result)
+        
+        return json.dumps(result, ensure_ascii=False)
+        
+    except Exception as e:
+        return json.dumps({
+            "error": f"获取当前股价失败: {str(e)}",
+            "symbol": symbol
+        }, ensure_ascii=False)
