@@ -26,7 +26,7 @@ class AgentSql:
         self.tools = self.toolkit.get_tools()  # 工具
         self.SQL_PREFIX = """You are an agent designed to interact with a SQL database.
             Given an input question, create a syntactically correct SQLite query to run, then look at the results of the query and return the answer.
-            Unless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 5 results.
+            Unless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 10 results.
             You can order the results by a relevant column to return the most interesting examples in the database.
             Never query for all the columns from a specific table, only ask for the relevant columns given the question.
             You have access to tools for interacting with the database.
@@ -38,10 +38,17 @@ class AgentSql:
             To start you should ALWAYS look at the tables in the database to see what you can query.
             Do NOT skip this step.
             Then you should query the schema of the most relevant tables.
+            
+            IMPORTANT: You MUST complete the entire query process and provide actual data results.
+            Do not stop at just listing tables or schemas - you must execute the final query and return the results.
+            If no relevant data is found, clearly state that no data was found for the specific query.
+            
             特别注意：
             如果所有表中都没有查询到相关的信息，就停止查询，返回没有查询到结果即可。
-            如果生成的SQL语句中，字段带有英文括号()，请使用双引号包裹起来，例如：收盘价(元) 双引号包裹为 "收盘价(元)"。
-            如果查询过程中SQL语句有语法错误，减少查询量,总体查询次数应控制在15次以内。"""
+            如果生成的SQL语句中，字段带有英文括号()，请使用双引号包裹起来，例如：收盘价(元) 双引号包裹为 \"收盘价(元)\"。
+            如果查询过程中SQL语句有语法错误，减少查询量,总体查询次数应控制在15次以内。
+            绝对不要假设表名，必须先查看数据库中实际存在的表。
+            必须完成完整的查询流程并返回具体的数据结果。"""
 
         self.system_message = SystemMessage(content=self.SQL_PREFIX)
         self.agent_executor = create_react_agent(self.llm, self.tools, checkpointer=None)

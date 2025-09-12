@@ -163,13 +163,27 @@ class FinanceBotEx:
 
         return sql_tools
 
+    # 在create_sys_prompt方法中添加热点股票推荐的说明
     @staticmethod
     def create_sys_prompt():
-        system_prompt = """你是一位金融助手，可以帮助用户查询数据库中的信息和预测股价。
+        system_prompt = """你是一位金融助手，可以帮助用户查询数据库中的信息、预测股价和推荐热点股票。
             你要尽可能的回答用户提出的问题，为了更好的回答问题，你可以使用工具进行多轮的尝试。
-
+    
             # 关于用户提出的问题:
             1、如果用户的问题中包含多个问题，请将问题分解为单个问题并逐个回答。
+            
+            # 关于股价预测工具的使用：
+            1、当用户询问股价预测时，使用predict_stock_price工具。
+            2、预测结果必须包含当前股价信息，包括当前价格、涨跌幅等。
+            3、如果用户只想查看当前股价，使用get_current_stock_price工具。
+            4、股价信息应该清晰地展示给用户，包括具体的价格数值。
+            
+            # 关于热点股票推荐工具的使用：
+            1、当用户询问热点股票、股票推荐、热门股票时，使用recommend_hot_stocks工具。
+            2、该工具支持中国市场(market='CN')和美国市场(market='US')。
+            3、推荐基于成交量、价格趋势、技术指标等多维度分析。
+            4、每只股票都有热度评分(0-100分)和推荐等级。
+            5、请向用户解释推荐理由和风险提示。
             
             # 关于股价预测工具的使用：
             1、当用户询问股票价格预测时，使用predict_stock_price工具。
@@ -222,6 +236,7 @@ class FinanceBotEx:
             """
         return system_prompt
 
+    # 在init_agent方法中的tools列表添加新工具
     def init_agent(self):
         # 初始化 RAG 工具
         retriever_tool = self.init_rag_tools()
@@ -230,9 +245,12 @@ class FinanceBotEx:
         sql_tools = self.init_sql_tool(settings.SQLDATABASE_URI)
     
         # 创建系统Prompt提示语
-        system_prompt = self.create_sys_prompt()
+        # 创建系统提示语并传递给ChatPromptTemplate
+        system_message = SystemMessagePromptTemplate.from_template(self.create_sys_prompt())
+        human_message = HumanMessagePromptTemplate.from_template("{input}")
+        prompt = ChatPromptTemplate.from_messages([system_message, human_message])
     
-        # 创建Agent - 添加股价相关工具
+        # 创建Agent - 添加股价相关工具和热点推荐工具
         agent_executor = create_react_agent(
             self.chat,
             tools=[
@@ -242,7 +260,8 @@ class FinanceBotEx:
                 calculate_stock_annualized_return, 
                 calculate_stock_limit_up,
                 predict_stock_price,  # 股价预测工具（包含当前价格）
-                get_current_stock_price,  # 新增：独立的当前股价工具
+                # get_current_stock_price,  # 独立的当前股价工具 - 与SQL工具冲突，暂时注释
+                recommend_hot_stocks,  # 新增：热点股票推荐工具
                 retriever_tool] + sql_tools,
             checkpointer=MemorySaver()
         )
@@ -426,4 +445,37 @@ def get_current_stock_price(symbol: str) -> str:
         return json.dumps({
             "error": f"获取当前股价失败: {str(e)}",
             "symbol": symbol
+        }, ensure_ascii=False)
+
+
+# 在文件末尾添加以下函数
+# 修改recommend_hot_stocks函数
+
+def recommend_hot_stocks(market: str = 'CN', top_n: int = 10, category: str = '热点', use_ai: bool = True) -> str:
+    """推荐热点股票
+    
+    Args:
+        market: 市场类型，'CN'为中国市场，'US'为美国市场
+        top_n: 返回推荐股票数量
+        category: 股票类别，如'热点'、'成长'、'价值'、'科技'等
+        use_ai: 是否使用AI生成股票池
+        
+    Returns:
+        包含热点股票推荐的JSON字符串
+    """
+    try:
+        result = StockAnalyzer.get_hot_stocks_recommendation(
+            market=market, 
+            top_n=top_n, 
+            use_ai_pool=use_ai,
+            category=category
+        )
+        
+        result = convert_to_json_serializable(result)
+        return json.dumps(result, ensure_ascii=False, indent=2)
+        
+    except Exception as e:
+        return json.dumps({
+            "error": f"获取热点股票推荐失败: {str(e)}",
+            "market": market
         }, ensure_ascii=False)

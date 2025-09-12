@@ -3,6 +3,10 @@ from langchain_chroma import Chroma
 from langchain_community.vectorstores.milvus import Milvus
 from utils.logger_config import LoggerManager
 
+# 2025-08-24 通过增加llamaindex构建向量索引的方式更精确的搜索
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext
+from llama_index.vector_stores.chroma import ChromaVectorStore
+import settings
 logger = LoggerManager().logger
 
 
@@ -18,6 +22,14 @@ class VectorDB:
         获得向量数据库的对象实例
         """
         raise NotImplementedError("Subclasses should implement this method!")
+    
+    def add_with_llamaindex(self, docs):
+
+        """
+        通过llamaindex的向量索引，将文档添加到数据库
+        """
+        raise NotImplementedError("Subclasses should implement this method!")
+
 
 
 class ChromaDB(VectorDB):
@@ -26,7 +38,7 @@ class ChromaDB(VectorDB):
                  host="localhost", port=8000,
                  persist_path="chroma_db",
                  collection_name="langchain",
-                 embed=None):
+                 embed=settings.EMBED):
 
         self.host = host
         self.port = port
@@ -53,11 +65,28 @@ class ChromaDB(VectorDB):
         logger.info(f'Chroma数据库的Collectname：{collection_name}')
         logger.info(f'Chroma数据库所使用的embed模型：{self.embed}')
 
+        self.llama_client = chromadb.PersistentClient(path=persist_path)
+        self.llama_collection = self.llama_client.get_or_create_collection("llama_collection_name")
+        # 为llama_index创建专用的向量存储和存储上下文
+        self.vector_store = ChromaVectorStore(chroma_collection=self.llama_collection)
+        self.storage_context = StorageContext.from_defaults(vector_store=self.vector_store)
+
+
     def add_with_langchain(self, docs):
         self.store.add_documents(documents=docs)
 
     def get_store(self):
         return self.store
+    
+    def add_with_llamaindex(self, docs):
+        
+        index = VectorStoreIndex.from_documents(
+                documents=docs,
+                storage_context=self.storage_context,
+                embed_model=self.embed
+                )
+        return index
+        
 
 
 class MilvusDB(VectorDB):
@@ -93,11 +122,3 @@ class MilvusDB(VectorDB):
 
     def get_store(self):
         return self.store
-
-# from sentence_transformers import SentenceTransformer;
-# embed = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
-# # 在ChromaDB初始化时使用新的集合名称
-# vector_db = ChromaDB(
-#     embed=embed,
-#     collection_name="finance_docs_384"  # 新的集合名称
-# )

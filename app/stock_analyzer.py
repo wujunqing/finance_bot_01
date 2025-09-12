@@ -9,6 +9,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import torch.nn.functional as F
+from datetime import datetime
 
 class WeightedMSELoss(nn.Module):
     def __init__(self):
@@ -1405,11 +1406,1036 @@ class StockAnalyzer:
             model = HybridModel(checkpoint['input_size'])
             model.load_state_dict(checkpoint['model_state_dict'])
             model.eval()
+            
+            print(f"模型加载成功: {model_path}")
+            print(f"模型性能 - MSE: {checkpoint['model_metrics']['mse']:.4f}, R²: {checkpoint['model_metrics']['r2']:.4f}")
+            
+            return {
+                'model': model,
+                'features': checkpoint['features'],
+                'scaler_params': checkpoint['scaler_params'],
+                'seq_length': checkpoint['seq_length'],
+                'metrics': checkpoint['model_metrics']
+            }
         except Exception as e:
             print(f"加载模型时出错: {e}")
             return None
-            checkpoint = torch.load(model_path)
-            model = HybridModel(checkpoint['input_size'])
-            model.load_state_dict(checkpoint['model_state_dict'])
-            model.eval()
+
+    @staticmethod
+    def get_hot_stocks_recommendation(market='CN', top_n=10, use_ai_pool=False, category='热点'):
+        """
+        获取热点股票推荐，基于多维度热度评分
+        
+        Args:
+            market: 市场类型 ('CN'为中国市场，'US'为美国市场)
+            top_n: 返回推荐股票数量
+            use_ai_pool: 是否使用AI生成的股票池（已弃用，现在从本地CSV文件读取）
+            category: 股票类别
+        """
+        try:
+            # 从本地CSV文件获取股票池
+            stock_pool = StockAnalyzer._get_stock_pool_from_csv(
+                csv_path='dataset/A股代码名称_20250908.csv',
+                market=market,
+                category=category
+            )
+            
+            if not stock_pool:
+                # 如果CSV读取失败，使用默认股票池作为备用
+                stock_pool = StockAnalyzer._get_default_stock_pool(market)
+                print("警告：CSV文件读取失败，使用默认股票池")
+            else:
+                print(f"从CSV文件成功加载 {len(stock_pool)} 只股票")
+            
+            # 分析股票并计算热度评分
+            recommendations = []
+            
+            for symbol in stock_pool:
+                try:
+                    # 获取股票历史数据（最近3个月）
+                    stock_data = StockAnalyzer._get_stock_historical_data(symbol, period='3mo')
+                    
+                    if stock_data is None or stock_data.empty:
+                        print(f"无法获取股票 {symbol} 的历史数据，跳过")
+                        continue
+                    
+                    # 计算热度评分
+                    heat_score = StockAnalyzer._calculate_heat_score(stock_data, symbol)
+                    
+                    # 生成推荐理由
+                    recommendation_reason = StockAnalyzer._generate_recommendation_reason(heat_score, stock_data)
+                    
+                    recommendation = {
+                        'symbol': symbol,
+                        'name': StockAnalyzer._get_stock_name_from_csv(symbol),
+                        'market_type': StockAnalyzer._get_market_type_from_symbol(symbol),
+                        'category': category,
+                        'heat_score': heat_score['total_score'],
+                        'heat_details': heat_score,
+                        'recommendation_reason': recommendation_reason,
+                        'current_price': float(stock_data['Close'].iloc[-1]) if not stock_data.empty else 0,
+                        'price_change_3m': StockAnalyzer._calculate_price_change(stock_data, '3mo')
+                    }
+                    recommendations.append(recommendation)
+                    
+                except Exception as e:
+                    print(f"分析股票 {symbol} 时出错: {e}")
+                    continue
+            
+            # 按热度评分排序并返回top_n
+            recommendations.sort(key=lambda x: x['heat_score'], reverse=True)
+            
+            return {
+                'success': True,
+                'market': market,
+                'category': category,
+                'data_source': 'local_csv',
+                'csv_file': 'A股代码名称_20250908.csv',
+                'total_analyzed': len(recommendations),
+                'recommendations': recommendations[:top_n],
+                'analysis_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'scoring_method': '多维度热度评分（成交量30分+价格趋势25分+RSI20分+其他25分）'
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'error': f"获取热点股票推荐失败: {str(e)}",
+                'market': market,
+                'recommendations': []
+            }
+    
+    @staticmethod
+    def _get_stock_historical_data(symbol, period='3mo'):
+        """
+        获取股票历史数据
+        
+        Args:
+            symbol: 股票代码（如 000001.SZ）
+            period: 时间周期（3mo=3个月）
+            
+        Returns:
+            DataFrame: 股票历史数据
+        """
+        try:
+            import yfinance as yf
+            import pandas as pd
+            
+            # 获取股票数据
+            ticker = yf.Ticker(symbol)
+            hist_data = ticker.history(period=period)
+            
+            if hist_data.empty:
+                print(f"警告：无法获取 {symbol} 的历史数据")
+                return None
+            
+            return hist_data
+            
+        except Exception as e:
+            print(f"获取 {symbol} 历史数据失败: {e}")
+            return None
+    
+    @staticmethod
+    def _calculate_heat_score(stock_data, symbol):
+        """
+        计算股票热度评分（总分100分）
+        
+        Args:
+            stock_data: 股票历史数据DataFrame
+            symbol: 股票代码
+            
+        Returns:
+            dict: 热度评分详情
+        """
+        try:
+            import numpy as np
+            import pandas as pd
+            
+            # 1. 成交量热度（30分）
+            volume_score = StockAnalyzer._calculate_volume_heat(stock_data)
+            
+            # 2. 价格趋势热度（25分）
+            trend_score = StockAnalyzer._calculate_trend_heat(stock_data)
+            
+            # 3. RSI热度（20分）
+            rsi_score = StockAnalyzer._calculate_rsi_heat(stock_data)
+            
+            # 4. 技术指标热度（15分）
+            technical_score = StockAnalyzer._calculate_technical_heat(stock_data)
+            
+            # 5. 波动率热度（10分）
+            volatility_score = StockAnalyzer._calculate_volatility_heat(stock_data)
+            
+            # 计算总分
+            total_score = volume_score + trend_score + rsi_score + technical_score + volatility_score
+            
+            return {
+                'total_score': round(total_score, 2),
+                'volume_heat': round(volume_score, 2),
+                'trend_heat': round(trend_score, 2),
+                'rsi_heat': round(rsi_score, 2),
+                'technical_heat': round(technical_score, 2),
+                'volatility_heat': round(volatility_score, 2),
+                'symbol': symbol
+            }
+            
+        except Exception as e:
+            print(f"计算 {symbol} 热度评分失败: {e}")
+            return {
+                'total_score': 0,
+                'volume_heat': 0,
+                'trend_heat': 0,
+                'rsi_heat': 0,
+                'technical_heat': 0,
+                'volatility_heat': 0,
+                'symbol': symbol
+            }
+    
+    @staticmethod
+    def _calculate_volume_heat(stock_data):
+        """
+        计算成交量热度（30分）
+        
+        Args:
+            stock_data: 股票历史数据
+            
+        Returns:
+            float: 成交量热度评分
+        """
+        try:
+            if 'Volume' not in stock_data.columns or stock_data['Volume'].empty:
+                return 0
+            
+            # 计算近期成交量与历史平均成交量的比值
+            recent_volume = stock_data['Volume'].tail(5).mean()  # 最近5天平均成交量
+            historical_volume = stock_data['Volume'].mean()  # 历史平均成交量
+            
+            if historical_volume == 0:
+                return 0
+            
+            volume_ratio = recent_volume / historical_volume
+            
+            # 成交量放大评分逻辑
+            if volume_ratio >= 2.0:  # 成交量放大2倍以上
+                score = 30
+            elif volume_ratio >= 1.5:  # 成交量放大1.5倍以上
+                score = 25
+            elif volume_ratio >= 1.2:  # 成交量放大1.2倍以上
+                score = 20
+            elif volume_ratio >= 1.0:  # 成交量正常
+                score = 15
+            elif volume_ratio >= 0.8:  # 成交量略低
+                score = 10
+            else:  # 成交量过低
+                score = 5
+            
+            return score
+            
+        except Exception as e:
+            print(f"计算成交量热度失败: {e}")
+            return 0
+    
+    @staticmethod
+    def _calculate_trend_heat(stock_data):
+        """
+        计算价格趋势热度（25分）
+        基于多头排列和中期上涨趋势
+        
+        Args:
+            stock_data: 股票历史数据
+            
+        Returns:
+            float: 趋势热度评分
+        """
+        try:
+            if stock_data.empty or 'Close' not in stock_data.columns:
+                return 0
+            
+            # 计算移动平均线
+            stock_data['MA5'] = stock_data['Close'].rolling(window=5).mean()
+            stock_data['MA10'] = stock_data['Close'].rolling(window=10).mean()
+            stock_data['MA20'] = stock_data['Close'].rolling(window=20).mean()
+            stock_data['MA60'] = stock_data['Close'].rolling(window=60).mean()
+            
+            # 获取最新数据
+            latest = stock_data.iloc[-1]
+            
+            score = 0
+            
+            # 1. 多头排列检查（15分）
+            if (latest['Close'] > latest['MA5'] > latest['MA10'] > 
+                latest['MA20'] > latest['MA60']):
+                score += 15  # 完美多头排列
+            elif (latest['Close'] > latest['MA5'] > latest['MA10'] > latest['MA20']):
+                score += 12  # 短期多头排列
+            elif (latest['Close'] > latest['MA5'] > latest['MA10']):
+                score += 8   # 极短期多头排列
+            elif latest['Close'] > latest['MA5']:
+                score += 5   # 价格在5日线上方
+            
+            # 2. 中期上涨趋势检查（10分）
+            if len(stock_data) >= 20:
+                price_20_days_ago = stock_data['Close'].iloc[-20]
+                current_price = latest['Close']
+                
+                price_change_pct = (current_price - price_20_days_ago) / price_20_days_ago * 100
+                
+                if price_change_pct >= 20:  # 20天涨幅超过20%
+                    score += 10
+                elif price_change_pct >= 10:  # 20天涨幅超过10%
+                    score += 8
+                elif price_change_pct >= 5:   # 20天涨幅超过5%
+                    score += 6
+                elif price_change_pct >= 0:   # 20天涨幅为正
+                    score += 4
+                else:  # 20天涨幅为负
+                    score += 0
+            
+            return min(score, 25)  # 最高25分
+            
+        except Exception as e:
+            print(f"计算趋势热度失败: {e}")
+            return 0
+    
+    @staticmethod
+    def _calculate_rsi_heat(stock_data):
+        """
+        计算RSI热度（20分）
+        
+        Args:
+            stock_data: 股票历史数据
+            
+        Returns:
+            float: RSI热度评分
+        """
+        try:
+            if stock_data.empty or 'Close' not in stock_data.columns:
+                return 0
+            
+            # 计算RSI
+            def calculate_rsi(prices, period=14):
+                delta = prices.diff()
+                gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+                loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+                rs = gain / loss
+                rsi = 100 - (100 / (1 + rs))
+                return rsi
+            
+            rsi = calculate_rsi(stock_data['Close'])
+            
+            if rsi.empty:
+                return 0
+            
+            current_rsi = rsi.iloc[-1]
+            
+            # RSI评分逻辑
+            if 50 <= current_rsi <= 70:  # RSI在健康上升区间
+                score = 20
+            elif 40 <= current_rsi < 50:  # RSI在中性偏强区间
+                score = 15
+            elif 30 <= current_rsi < 40:  # RSI在超卖反弹区间
+                score = 18
+            elif 70 < current_rsi <= 80:  # RSI在超买但仍有空间
+                score = 12
+            elif current_rsi > 80:  # RSI过度超买
+                score = 5
+            elif current_rsi < 30:  # RSI过度超卖
+                score = 8
+            else:
+                score = 10
+            
+            return score
+            
+        except Exception as e:
+            print(f"计算RSI热度失败: {e}")
+            return 0
+    
+    @staticmethod
+    def _calculate_technical_heat(stock_data):
+        """
+        计算技术指标热度（15分）
+        包括MACD、布林带等
+        
+        Args:
+            stock_data: 股票历史数据
+            
+        Returns:
+            float: 技术指标热度评分
+        """
+        try:
+            if stock_data.empty or 'Close' not in stock_data.columns:
+                return 0
+            
+            score = 0
+            
+            # 1. MACD指标（8分）
+            try:
+                # 计算MACD
+                exp1 = stock_data['Close'].ewm(span=12).mean()
+                exp2 = stock_data['Close'].ewm(span=26).mean()
+                macd = exp1 - exp2
+                signal = macd.ewm(span=9).mean()
+                histogram = macd - signal
+                
+                if not histogram.empty:
+                    current_hist = histogram.iloc[-1]
+                    prev_hist = histogram.iloc[-2] if len(histogram) > 1 else 0
+                    
+                    if current_hist > 0 and current_hist > prev_hist:  # MACD金叉且向上
+                        score += 8
+                    elif current_hist > 0:  # MACD在零轴上方
+                        score += 5
+                    elif current_hist > prev_hist:  # MACD向上但在零轴下方
+                        score += 3
+            except:
+                pass
+            
+            # 2. 布林带指标（7分）
+            try:
+                # 计算布林带
+                ma20 = stock_data['Close'].rolling(window=20).mean()
+                std20 = stock_data['Close'].rolling(window=20).std()
+                upper_band = ma20 + (std20 * 2)
+                lower_band = ma20 - (std20 * 2)
+                
+                current_price = stock_data['Close'].iloc[-1]
+                current_upper = upper_band.iloc[-1]
+                current_lower = lower_band.iloc[-1]
+                current_ma = ma20.iloc[-1]
+                
+                # 布林带位置评分
+                if current_price > current_ma:  # 价格在中轨上方
+                    if current_price < current_upper * 0.9:  # 未接近上轨
+                        score += 7
+                    else:  # 接近上轨
+                        score += 4
+                elif current_price > current_lower * 1.1:  # 价格在下轨上方但中轨下方
+                    score += 5
+                else:  # 价格接近或跌破下轨
+                    score += 2
+            except:
+                pass
+            
+            return min(score, 15)  # 最高15分
+            
+        except Exception as e:
+            print(f"计算技术指标热度失败: {e}")
+            return 0
+    
+    @staticmethod
+    def _calculate_volatility_heat(stock_data):
+        """
+        计算波动率热度（10分）
+        
+        Args:
+            stock_data: 股票历史数据
+            
+        Returns:
+            float: 波动率热度评分
+        """
+        try:
+            if stock_data.empty or 'Close' not in stock_data.columns:
+                return 0
+            
+            # 计算日收益率
+            returns = stock_data['Close'].pct_change().dropna()
+            
+            if returns.empty:
+                return 0
+            
+            # 计算波动率（标准差）
+            volatility = returns.std() * 100  # 转换为百分比
+            
+            # 波动率评分逻辑（适度波动最佳）
+            if 1.5 <= volatility <= 3.0:  # 适度波动
+                score = 10
+            elif 1.0 <= volatility < 1.5:  # 波动偏小
+                score = 8
+            elif 3.0 < volatility <= 4.5:  # 波动偏大但可接受
+                score = 7
+            elif 0.5 <= volatility < 1.0:  # 波动很小
+                score = 6
+            elif 4.5 < volatility <= 6.0:  # 波动较大
+                score = 5
+            else:  # 波动过大或过小
+                score = 3
+            
+            return score
+            
+        except Exception as e:
+            print(f"计算波动率热度失败: {e}")
+            return 0
+    
+    @staticmethod
+    def _generate_recommendation_reason(heat_score, stock_data):
+        """
+        生成推荐理由
+        
+        Args:
+            heat_score: 热度评分详情
+            stock_data: 股票历史数据
+            
+        Returns:
+            str: 推荐理由
+        """
+        try:
+            reasons = []
+            
+            # 根据各项评分生成理由
+            if heat_score['volume_heat'] >= 20:
+                reasons.append("成交量显著放大，市场关注度高")
+            elif heat_score['volume_heat'] >= 15:
+                reasons.append("成交量活跃，资金参与积极")
+            
+            if heat_score['trend_heat'] >= 20:
+                reasons.append("多头排列明显，中期上涨趋势强劲")
+            elif heat_score['trend_heat'] >= 15:
+                reasons.append("技术形态良好，短期趋势向上")
+            
+            if heat_score['rsi_heat'] >= 18:
+                reasons.append("RSI指标健康，买入时机较好")
+            elif heat_score['rsi_heat'] >= 15:
+                reasons.append("RSI指标稳定，技术面支撑")
+            
+            if heat_score['technical_heat'] >= 12:
+                reasons.append("技术指标配合良好，多项指标共振")
+            
+            if heat_score['volatility_heat'] >= 8:
+                reasons.append("波动率适中，风险收益比合理")
+            
+            # 综合评分理由
+            total_score = heat_score['total_score']
+            if total_score >= 80:
+                reasons.append("综合热度评分优秀，强烈推荐")
+            elif total_score >= 70:
+                reasons.append("综合热度评分良好，值得关注")
+            elif total_score >= 60:
+                reasons.append("综合热度评分中等，可适量配置")
+            else:
+                reasons.append("综合热度评分一般，建议谨慎")
+            
+            return "；".join(reasons) if reasons else "技术面分析显示该股票具有一定投资价值"
+            
+        except Exception as e:
+            print(f"生成推荐理由失败: {e}")
+            return "基于多维度技术分析的推荐"
+    
+    @staticmethod
+    def _calculate_price_change(stock_data, period):
+        """
+        计算价格变化百分比
+        
+        Args:
+            stock_data: 股票历史数据
+            period: 时间周期
+            
+        Returns:
+            float: 价格变化百分比
+        """
+        try:
+            if stock_data.empty or 'Close' not in stock_data.columns:
+                return 0
+            
+            current_price = stock_data['Close'].iloc[-1]
+            start_price = stock_data['Close'].iloc[0]
+            
+            if start_price == 0:
+                return 0
+            
+            change_pct = (current_price - start_price) / start_price * 100
+            return round(change_pct, 2)
+            
+        except Exception as e:
+            print(f"计算价格变化失败: {e}")
+            return 0
+    
+    @staticmethod
+    def _get_stock_pool_from_csv(csv_path, market='CN', category='热点', max_stocks=50):
+        """
+        从CSV文件获取股票池
+        
+        Args:
+            csv_path: CSV文件路径
+            market: 市场类型
+            category: 股票类别
+            max_stocks: 最大股票数量
+            
+        Returns:
+            list: 股票代码列表
+        """
+        try:
+            import pandas as pd
+            import random
+            
+            # 读取CSV文件
+            df = pd.read_csv(csv_path, encoding='utf-8')
+            
+            # 确保必要的列存在
+            if 'code' not in df.columns or 'name' not in df.columns:
+                print("错误：CSV文件缺少必要的列（code, name）")
+                return []
+            
+            # 根据市场类型筛选
+            if market == 'CN':
+                if '市场类型' in df.columns:
+                    # 如果有市场类型列，可以进一步筛选
+                    # 这里可以根据category进行更精细的筛选
+                    pass
+                
+                # 转换为标准格式（添加后缀）
+                stock_codes = []
+                for _, row in df.iterrows():
+                    code = str(row['code']).zfill(6)  # 确保6位数字
+                    market_type = row.get('市场类型', '')
+                    
+                    # 根据市场类型添加后缀
+                    if market_type == '深圳' or code.startswith(('000', '002', '003', '300')):
+                        stock_codes.append(f"{code}.SZ")
+                    elif market_type == '上海' or code.startswith(('600', '601', '603', '605', '688')):
+                        stock_codes.append(f"{code}.SS")
+                    else:
+                        # 默认根据代码前缀判断
+                        if code.startswith(('000', '002', '003', '300')):
+                            stock_codes.append(f"{code}.SZ")
+                        elif code.startswith(('600', '601', '603', '605', '688')):
+                            stock_codes.append(f"{code}.SS")
+                
+                # 随机选择股票（模拟热点股票筛选）
+                if len(stock_codes) > max_stocks:
+                    stock_codes = random.sample(stock_codes, max_stocks)
+                
+                return stock_codes
+            
+            else:
+                # 美国市场暂不支持
+                print("暂不支持美国市场的CSV数据")
+                return []
+                
+        except Exception as e:
+            print(f"从CSV文件读取股票池失败: {e}")
+            return []
+    
+    @staticmethod
+    def _get_stock_name_from_csv(symbol, csv_path='f:\\ai_pj\\AI\\finance\\finance_bot\\dataset\\A股代码名称_20250908.csv'):
+        """
+        从CSV文件获取股票名称
+        
+        Args:
+            symbol: 股票代码（如 000001.SZ）
+            csv_path: CSV文件路径
+            
+        Returns:
+            str: 股票名称
+        """
+        try:
+            import pandas as pd
+            
+            # 提取纯数字代码
+            code = symbol.split('.')[0]
+            
+            # 读取CSV文件
+            df = pd.read_csv(csv_path, encoding='utf-8')
+            
+            # 查找对应的股票名称
+            matching_row = df[df['code'].astype(str).str.zfill(6) == code]
+            
+            if not matching_row.empty:
+                return matching_row.iloc[0]['name']
+            else:
+                return f"股票{code}"
+                
+        except Exception as e:
+            print(f"获取股票名称失败: {e}")
+            return f"股票{symbol}"
+    
+    @staticmethod
+    def _get_market_type_from_symbol(symbol):
+        """
+        根据股票代码判断市场类型
+        
+        Args:
+            symbol: 股票代码（如 000001.SZ）
+            
+        Returns:
+            str: 市场类型
+        """
+        if symbol.endswith('.SZ'):
+            return '深圳'
+        elif symbol.endswith('.SS'):
+            return '上海'
+        else:
+            return '未知'
+    
+    @staticmethod
+    def get_ai_generated_stock_pool(market='CN', category='热点', llm_client=None):
+        """
+        使用大模型生成股票池
+        
+        Args:
+            market: 市场类型，'CN'为中国市场，'US'为美国市场
+            category: 股票类别，如'热点'、'成长'、'价值'、'科技'等
+            llm_client: 大模型客户端实例
+            
+        Returns:
+            list: 股票代码列表
+        """
+        try:
+            if market == 'CN':
+                prompt = f"""
+                请根据当前A股市场情况，推荐15-20只{category}股票。
+                
+                要求：
+                1. 股票代码格式：深圳股票用.SZ后缀，上海股票用.SS后缀
+                2. 涵盖不同行业和板块
+                3. 考虑以下因素：
+                   - 近期市场热点和政策导向
+                   - 公司基本面和成长性
+                   - 技术面表现和资金关注度
+                   - 行业景气度和发展前景
+                
+                请直接返回股票代码列表，每行一个，格式如：000001.SZ
+                不要包含其他解释文字。
+                """
+            else:
+                prompt = f"""
+                Please recommend 15-20 {category} stocks from US market based on current market conditions.
+                
+                Requirements:
+                1. Stock symbols in standard format (e.g., AAPL, MSFT)
+                2. Cover different sectors and industries
+                3. Consider factors:
+                   - Recent market trends and policy directions
+                   - Company fundamentals and growth potential
+                   - Technical performance and institutional interest
+                   - Industry outlook and development prospects
+                
+                Please return only the stock symbols, one per line.
+                No additional explanations needed.
+                """
+            
+            if llm_client:
+                response = llm_client.chat.completions.create(
+                    model="gpt-3.5-turbo",  # 或使用其他模型
+                    messages=[
+                        {"role": "system", "content": "你是一位专业的股票分析师，具有丰富的市场经验。"},
+                        {"role": "user", "content": prompt}
+                    ],
+                    temperature=0.7
+                )
+                
+                stock_list = response.choices[0].message.content.strip().split('\n')
+                # 清理和验证股票代码
+                cleaned_stocks = []
+                for stock in stock_list:
+                    stock = stock.strip()
+                    if stock and (stock.endswith('.SZ') or stock.endswith('.SS') or 
+                                (market == 'US' and len(stock) <= 5 and stock.isalpha())):
+                        cleaned_stocks.append(stock)
+                
+                return cleaned_stocks[:20]  # 限制最多20只
+            else:
+                # 如果没有LLM客户端，返回默认股票池
+                return StockAnalyzer._get_default_stock_pool(market)
+                
+        except Exception as e:
+            print(f"大模型生成股票池失败: {e}")
+            # 降级到默认股票池
+            return StockAnalyzer._get_default_stock_pool(market)
+    
+    @staticmethod
+    def _get_default_stock_pool(market='CN'):
+        """默认股票池，作为大模型失败时的备选方案"""
+        if market == 'CN':
+            return [
+                '000001.SZ', '000002.SZ', '000858.SZ', '000876.SZ',
+                '002415.SZ', '002594.SZ', '300059.SZ', '300750.SZ',
+                '600036.SS', '600519.SS', '600887.SS', '000725.SZ',
+                '002230.SZ', '300014.SZ', '600276.SS'
+            ]
+        else:
+            return [
+                'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA',
+                'META', 'NVDA', 'NFLX', 'AMD', 'BABA',
+                'CRM', 'ORCL', 'ADBE', 'PYPL', 'INTC'
+            ]
+
+    @staticmethod
+    def get_all_a_share_stocks():
+        """获取A股所有股票代码和公司名称
+        
+        Returns:
+            dict: 包含股票代码、公司名称、市场等信息的字典
+                {
+                    'success': bool,
+                    'data': [
+                        {
+                            'code': str,      # 股票代码 (如: '000001.SZ')
+                            'name': str,      # 公司名称 (如: '平安银行')
+                            'market': str,    # 市场 ('SZ'/'SS')
+                            'industry': str   # 行业分类
+                        }
+                    ],
+                    'total_count': int,
+                    'message': str
+                }
+        """
+        try:
+            import pandas as pd
+            import os
+            
+            # 本地CSV文件路径
+            csv_file_path = r'f:\ai_pj\AI\finance\finance_bot\dataset\A股代码名称_20250908.csv'
+            
+            # 检查文件是否存在
+            if not os.path.exists(csv_file_path):
+                return StockAnalyzer._get_fallback_a_share_list()
+            
+            # 读取CSV文件
+            df = pd.read_csv(csv_file_path, encoding='utf-8')
+            
+            if df.empty:
+                return {
+                    'success': False,
+                    'data': [],
+                    'total_count': 0,
+                    'message': 'CSV文件为空'
+                }
+            
+            # 处理数据格式
+            stocks_data = []
+            for _, row in df.iterrows():
+                code = str(row.get('code', '')).strip()
+                name = str(row.get('name', '')).strip()
+                market_type = str(row.get('市场类型', '')).strip()
+                
+                # 跳过无效数据
+                if not code or not name:
+                    continue
+                
+                # 根据市场类型添加后缀
+                if market_type == '深圳':
+                    market_code = f"{code}.SZ"
+                    market = 'SZ'
+                elif market_type == '上海':
+                    market_code = f"{code}.SS"
+                    market = 'SS'
+                else:
+                    # 根据代码开头判断市场
+                    if code.startswith(('0', '3')):
+                        market_code = f"{code}.SZ"
+                        market = 'SZ'
+                    elif code.startswith('6'):
+                        market_code = f"{code}.SS"
+                        market = 'SS'
+                    else:
+                        market_code = code
+                        market = 'Unknown'
+                
+                stocks_data.append({
+                    'code': market_code,
+                    'name': name,
+                    'market': market,
+                    'market_type': market_type,
+                    'industry': '待获取'  # 可以后续通过其他接口获取行业信息
+                })
+            
+            return {
+                'success': True,
+                'data': stocks_data,
+                'total_count': len(stocks_data),
+                'message': f'成功从本地CSV文件获取{len(stocks_data)}只A股股票信息'
+            }
+            
+        except Exception as e:
+            # 发生错误时使用备用方案
+            return {
+                'success': False,
+                'data': [],
+                'total_count': 0,
+                'message': f'从CSV文件获取A股数据时发生错误: {str(e)}，请检查文件路径和格式'
+            }
+    
+    @staticmethod
+    def _get_fallback_a_share_list():
+        """备用A股股票列表（主要的大盘股和知名股票）"""
+        fallback_stocks = [
+            {'code': '000001.SZ', 'name': '平安银行', 'market': 'SZ', 'industry': '银行'},
+            {'code': '000002.SZ', 'name': '万科A', 'market': 'SZ', 'industry': '房地产'},
+            {'code': '000858.SZ', 'name': '五粮液', 'market': 'SZ', 'industry': '食品饮料'},
+            {'code': '000876.SZ', 'name': '新希望', 'market': 'SZ', 'industry': '农林牧渔'},
+            {'code': '002415.SZ', 'name': '海康威视', 'market': 'SZ', 'industry': '电子'},
+            {'code': '002594.SZ', 'name': '比亚迪', 'market': 'SZ', 'industry': '汽车'},
+            {'code': '300059.SZ', 'name': '东方财富', 'market': 'SZ', 'industry': '非银金融'},
+            {'code': '300750.SZ', 'name': '宁德时代', 'market': 'SZ', 'industry': '电气设备'},
+            {'code': '600036.SS', 'name': '招商银行', 'market': 'SS', 'industry': '银行'},
+            {'code': '600519.SS', 'name': '贵州茅台', 'market': 'SS', 'industry': '食品饮料'},
+            {'code': '600887.SS', 'name': '伊利股份', 'market': 'SS', 'industry': '食品饮料'},
+            {'code': '000725.SZ', 'name': '京东方A', 'market': 'SZ', 'industry': '电子'},
+            {'code': '002230.SZ', 'name': '科大讯飞', 'market': 'SZ', 'industry': '计算机'},
+            {'code': '300014.SZ', 'name': '亿纬锂能', 'market': 'SZ', 'industry': '电气设备'},
+            {'code': '600276.SS', 'name': '恒瑞医药', 'market': 'SS', 'industry': '医药生物'},
+            {'code': '000063.SZ', 'name': '中兴通讯', 'market': 'SZ', 'industry': '通信'},
+            {'code': '002142.SZ', 'name': '宁波银行', 'market': 'SZ', 'industry': '银行'},
+            {'code': '600030.SS', 'name': '中信证券', 'market': 'SS', 'industry': '非银金融'},
+            {'code': '000858.SZ', 'name': '五粮液', 'market': 'SZ', 'industry': '食品饮料'},
+            {'code': '601318.SS', 'name': '中国平安', 'market': 'SS', 'industry': '非银金融'}
+        ]
+        
+        return {
+            'success': True,
+            'data': fallback_stocks,
+            'total_count': len(fallback_stocks),
+            'message': f'使用备用股票列表，包含{len(fallback_stocks)}只主要A股股票'
+        }
+    
+    @staticmethod
+    def save_stocks_to_file(stocks_data, file_path=None, file_format='csv'):
+        """将股票数据保存到文件
+        
+        Args:
+            stocks_data (dict): 股票数据字典
+            file_path (str): 文件保存路径，如果为None则使用默认路径
+            file_format (str): 文件格式，支持 'csv', 'json', 'excel'
+            
+        Returns:
+            dict: 保存结果
+        """
+        try:
+            import pandas as pd
+            import json
+            import os
+            
+            if not stocks_data.get('success', False):
+                return {
+                    'success': False,
+                    'message': '股票数据无效，无法保存'
+                }
+            
+            # 设置默认文件路径
+            if file_path is None:
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                if file_format == 'csv':
+                    file_path = f'a_share_stocks_{timestamp}.csv'
+                elif file_format == 'json':
+                    file_path = f'a_share_stocks_{timestamp}.json'
+                elif file_format == 'excel':
+                    file_path = f'a_share_stocks_{timestamp}.xlsx'
+            
+            # 创建DataFrame
+            df = pd.DataFrame(stocks_data['data'])
+            
+            # 根据格式保存文件
+            if file_format.lower() == 'csv':
+                df.to_csv(file_path, index=False, encoding='utf-8-sig')
+            elif file_format.lower() == 'json':
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    json.dump(stocks_data, f, ensure_ascii=False, indent=2)
+            elif file_format.lower() == 'excel':
+                df.to_excel(file_path, index=False, engine='openpyxl')
+            else:
+                return {
+                    'success': False,
+                    'message': f'不支持的文件格式: {file_format}'
+                }
+            
+            # 获取文件大小
+            file_size = os.path.getsize(file_path)
+            
+            return {
+                'success': True,
+                'file_path': os.path.abspath(file_path),
+                'file_size': file_size,
+                'total_records': len(stocks_data['data']),
+                'message': f'成功保存{len(stocks_data["data"])}条股票数据到 {file_path}'
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'message': f'保存文件时发生错误: {str(e)}'
+            }
+    
+    @staticmethod
+    def import_and_save_a_share_stocks(file_format='csv', file_path=None):
+        """导入A股股票数据并保存到文件的一体化方法
+        
+        Args:
+            file_format (str): 文件格式，支持 'csv', 'json', 'excel'
+            file_path (str): 文件保存路径，如果为None则使用默认路径
+            
+        Returns:
+            dict: 导入和保存的结果
+        """
+        print("正在获取A股股票数据...")
+        
+        # 获取股票数据
+        stocks_data = StockAnalyzer.get_all_a_share_stocks()
+        
+        if not stocks_data['success']:
+            return stocks_data
+        
+        print(f"成功获取 {stocks_data['total_count']} 只股票数据")
+        print("正在保存到文件...")
+        
+        # 保存到文件
+        save_result = StockAnalyzer.save_stocks_to_file(
+            stocks_data, file_path, file_format
+        )
+        
+        if save_result['success']:
+            print(f"文件已保存到: {save_result['file_path']}")
+            print(f"文件大小: {save_result['file_size']} 字节")
+            
+            # 合并结果
+            return {
+                'success': True,
+                'data_info': {
+                    'total_stocks': stocks_data['total_count'],
+                    'message': stocks_data['message']
+                },
+                'file_info': {
+                    'file_path': save_result['file_path'],
+                    'file_size': save_result['file_size'],
+                    'format': file_format
+                },
+                'message': f'成功导入并保存{stocks_data["total_count"]}只A股股票数据'
+            }
+        else:
+            return save_result
+    
+    @staticmethod
+    def search_stocks_by_name(name_keyword):
+        """根据公司名称关键词搜索股票
+        
+        Args:
+            name_keyword (str): 公司名称关键词
+            
+        Returns:
+            dict: 搜索结果
+        """
+        try:
+            all_stocks = StockAnalyzer.get_all_a_share_stocks()
+            if not all_stocks['success']:
+                return all_stocks
+            
+            # 搜索匹配的股票
+            matched_stocks = []
+            for stock in all_stocks['data']:
+                if name_keyword.lower() in stock['name'].lower():
+                    matched_stocks.append(stock)
+            
+            return {
+                'success': True,
+                'data': matched_stocks,
+                'total_count': len(matched_stocks),
+                'message': f'找到{len(matched_stocks)}只包含"{name_keyword}"的股票'
+            }
+            
+        except Exception as e:
+            return {
+                'success': False,
+                'data': [],
+                'total_count': 0,
+                'message': f'搜索股票时发生错误: {str(e)}'
+            }
 

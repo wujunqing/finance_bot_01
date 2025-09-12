@@ -54,7 +54,9 @@ class ElasticsearchDB(TraditionDB):
         self.k = k
 
         try:
-            url = f"{schema}://elastic:{settings.ELASTIC_PASSWORD}@{host}:{port}"
+            url = f"{schema}://{settings.ELASTIC_HOST}:{settings.ELASTIC_PORT}"
+            #url = f"{schema}://elastic:{settings.ELASTIC_PASSWORD}@{host}:{port}"
+            #url = "http://localhost:9500"
             logger.info(f'初始化ES服务连接：{url}')
 
             self.es = Elasticsearch(
@@ -76,13 +78,27 @@ class ElasticsearchDB(TraditionDB):
 
     def to_keywords(self, input_string):
         """将句子转成检索关键词序列"""
+
+        #添加自定义词
+        user_add_word = ["流动资产", "流动资产合计", "非流动资产合计", "资产总计", "货币资金", "结算备付金"
+                 ,"拆出资金", "交易性金融资产", "衍生金融资产", "应收票据", "应收账款", "应收款项融资","预付款项",
+                 "应收保费", "应收分保账款", "应收分保合同准备金", "其他应收款", "应收利息","应收股利","买入返售金融资产","存货",
+                 "数据资源","合同资产","持有待售资产","一年内到期的非流动资产","其他流动资产","发放贷款和垫款",
+                 "债权投资","其他债权投资","长期应收款","长期股权投资","其他权益工具投资","其他非流动金融资产","投资性房地产",
+                 "固定资产","在建工程","生产性生物资产","油气资产","使用权资产","无形资产","开发支出","商誉","长期待摊费用","递延所得税资产",
+                 "其他非流动资产",]
+
+        for word in user_add_word:
+            jieba.add_word(word)
+
         # 按搜索引擎模式分词
-        word_tokens = jieba.cut_for_search(input_string)
+        word_tokens = jieba.cut(input_string)
         # 加载停用词表
-        stop_words = set(stopwords.words('chinese'))
+        #stop_words = set(stopwords.words('chinese'))
         # 去除停用词
-        filtered_sentence = [w for w in word_tokens if not w in stop_words]
-        return ' '.join(filtered_sentence)
+        #filtered_sentence = [w for w in word_tokens if not w in stop_words]
+        #return ' '.join(filtered_sentence)
+        return ' '.join(word_tokens)
 
     def sent_tokenize(self, input_string):
         """按标点断句,没有用到"""
